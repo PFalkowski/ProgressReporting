@@ -56,21 +56,22 @@ namespace ProgressReporting
             NotifyPropertyChanged(nameof(IsIdle));
         }
 
-        public void Start(long iterationsNumber)
+        public void Pause()
         {
-            if (iterationsNumber <= 0)
+            if (IsRunning)
             {
-                throw new ArgumentOutOfRangeException(nameof(iterationsNumber));
+                Watch.Stop();
+                Refresh();
             }
-            TargetIteration = iterationsNumber;
-            UsedAtLestOnce = true;
-            Watch.Start();
         }
 
-        public void Stop()
+        public void UnPause()
         {
-            Watch.Stop();
-            Refresh();
+            if (!IsRunning)
+            {
+                Watch.Start();
+                Refresh();
+            }
         }
 
         public virtual void Reset()
@@ -79,6 +80,7 @@ namespace ProgressReporting
             CurrentIteration = 0;
             UsedAtLestOnce = false;
             Watch.Reset();
+            Refresh();
         }
 
         public virtual void Restart(long iterationsNumber)
@@ -91,18 +93,14 @@ namespace ProgressReporting
             CurrentIteration = 0;
             UsedAtLestOnce = true;
             Watch.Restart();
-        }
-
-        public void StartForIterations(long iterationsNumber)
-        {
-            Restart(iterationsNumber);
+            Refresh();
         }
 
         public static ProgressTool StartNew(long iterationsNumber)
         {
-            var temp = new ProgressTool();
-            temp.StartForIterations(iterationsNumber);
-            return temp;
+            var progressTool = new ProgressTool();
+            progressTool.Restart(iterationsNumber);
+            return progressTool;
         }
 
         //protected virtual string _statusVerbose()

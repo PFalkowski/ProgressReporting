@@ -12,7 +12,7 @@ namespace ProgressReporting.Test
             public void MtCreation()
             {
                 var tool = new ProgressTool();
-                tool.StartForIterations(1);
+                tool.Restart(1);
                 Assert.False(tool.IsIdle);
                 Assert.Equal(0, tool.CompletedPercent);
                 tool.ReportProgress();
@@ -26,7 +26,7 @@ namespace ProgressReporting.Test
             public void MtReset()
             {
                 var tool = new ProgressTool();
-                tool.StartForIterations(1);
+                tool.Restart(1);
                 tool.ReportProgress();
                 tool.ReportProgress();
                 tool.Reset();
@@ -37,7 +37,7 @@ namespace ProgressReporting.Test
             public void Mt2()
             {
                 var tool = new ProgressTool();
-                tool.StartForIterations(2);
+                tool.Restart(2);
 
                 Assert.Equal(0, tool.CompletedPercent);
                 Assert.False(tool.IsIdle);
@@ -88,7 +88,7 @@ namespace ProgressReporting.Test
                 var tested = new ProgressTool();
 
                 Assert.False(tested.IsRunning);
-                tested.StartForIterations(numberOfIterations * 2);
+                tested.Restart(numberOfIterations * 2);
                 for (var i = 0; i < numberOfIterations; ++i)
                 {
                     Assert.True(tested.IsRunning);
@@ -96,18 +96,18 @@ namespace ProgressReporting.Test
                 }
                 Assert.False(tested.IsIdle);
                 Assert.True(tested.IsRunning);
-                tested.Stop();
+                tested.Pause();
 
                 Assert.False(tested.IsRunning);
                 Assert.True(tested.IsIdle);
             }
             [Fact]
-            public void StopDoesNothingWhenNotRunning()
+            public void PauseDoesNothingWhenNotRunning()
             {
                 var tested = new ProgressTool();
                 Assert.False(tested.IsRunning);
                 Assert.True(tested.IsIdle);
-                tested.Stop();
+                tested.Pause();
                 Assert.False(tested.IsRunning);
                 Assert.True(tested.IsIdle);
             }

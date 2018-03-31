@@ -18,10 +18,9 @@ namespace ProgressReporting
         TimeSpan RemainingTimeEstimate { get; }
         TimeSpan AverageIterationDuration { get; }
         void ReportProgress();
-        void StartForIterations(long iterationsNumber);
-        void Start(long iterationsNumber);
-        void Stop();
-        void Reset();
         void Restart(long iterationsNumber);
+        void Pause();
+        void UnPause();
+        void Reset();
     }
 }
