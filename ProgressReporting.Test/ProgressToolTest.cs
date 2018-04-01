@@ -11,7 +11,7 @@ namespace ProgressReporting.Test
             [Fact]
             public void MtCreation()
             {
-                var tool = new ProgressTool();
+                var tool = new ProgressReporter();
                 tool.Restart(1);
                 Assert.False(tool.IsIdle);
                 Assert.Equal(0, tool.CompletedPercent);
@@ -25,7 +25,7 @@ namespace ProgressReporting.Test
             [Fact]
             public void MtReset()
             {
-                var tool = new ProgressTool();
+                var tool = new ProgressReporter();
                 tool.Restart(1);
                 tool.ReportProgress();
                 tool.ReportProgress();
@@ -36,7 +36,7 @@ namespace ProgressReporting.Test
             [Fact]
             public void Mt2()
             {
-                var tool = new ProgressTool();
+                var tool = new ProgressReporter();
                 tool.Restart(2);
 
                 Assert.Equal(0, tool.CompletedPercent);
@@ -51,7 +51,7 @@ namespace ProgressReporting.Test
             [Fact]
             public void ReportProgressTest()
             {
-                var tool = new ProgressTool();
+                var tool = new ProgressReporter();
 
                 Assert.Throws<InvalidOperationException>(() => { tool.ReportProgress(); });
             }
@@ -59,7 +59,7 @@ namespace ProgressReporting.Test
             public void ReportProgressTest2()
             {
                 const int numberOfIterations = 10;
-                var tested = new ProgressTool();
+                var tested = new ProgressReporter();
                 Thread.Sleep(1);
                 Assert.Equal(0L, tested.Elapsed.TotalMilliseconds);
                 Assert.False(tested.IsRunning);
@@ -85,7 +85,7 @@ namespace ProgressReporting.Test
             public void FinishTest()
             {
                 const int numberOfIterations = 5;
-                var tested = new ProgressTool();
+                var tested = new ProgressReporter();
 
                 Assert.False(tested.IsRunning);
                 tested.Restart(numberOfIterations * 2);
@@ -104,7 +104,7 @@ namespace ProgressReporting.Test
             [Fact]
             public void PauseDoesNothingWhenNotRunning()
             {
-                var tested = new ProgressTool();
+                var tested = new ProgressReporter();
                 Assert.False(tested.IsRunning);
                 Assert.True(tested.IsIdle);
                 tested.Pause();
