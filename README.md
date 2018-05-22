@@ -13,14 +13,16 @@ Example usage:
             tested.Start(bytesToTransfer);
             
             tested.ReportProgress(9999);
-            // tested.BitrateBps == 9999
+            // tested.BitrateBps >= 9999
             // tested.IsRunning == true
-            // tested.Elapsed == depends
-            // tested.RemainingTimeEstimate == depends
+            // tested.Elapsed == depends, probably 0
+            // tested.RemainingTimeEstimate - needs two samples or more
             
+            Thread.Sleep(1000);
             
             tested.ReportProgress(10000);
             // tested.IsRunning == false
+            // tested.Elapsed >= 1 second
             
             
             tested.ReportProgress(10001); // -> ArgumentOutOfRangeException
