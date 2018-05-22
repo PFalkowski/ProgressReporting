@@ -19,7 +19,7 @@ namespace ProgressReporting
         TimeSpan AverageCycleDuration { get; }
         void ReportProgress(double RawProgressValue);
         void ReportProgress();
-        void Restart(double iterationsNumber);
+        void Restart(double RawTargetValue);
         void Pause();
         void UnPause();
         void Reset();

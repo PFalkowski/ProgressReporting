@@ -209,20 +209,30 @@ namespace ProgressReporting.Test
 
                 Assert.Equal(200, tested.TargetCycleEstimate);
 
-                tested.ReportProgress(99);
+                tested.ReportProgress(100);
 
                 Assert.Equal(2, tested.TargetCycleEstimate, 1);
 
                 tested.ReportProgress(100);
 
                 Assert.Equal(4, tested.TargetCycleEstimate, 1);
-                tested.ReportProgress(101);
-
-                Assert.Equal(5.9, tested.TargetCycleEstimate, 1);
 
                 tested.ReportProgress(200);
 
-                Assert.Equal(4, tested.TargetCycleEstimate, 1);
+                Assert.Equal(3, tested.TargetCycleEstimate, 1);
+            }
+            [Fact]
+            public void TargetCycleEstimateIsZeroWhenFinished()
+            {
+                var tested = new ProgressReporter();
+                tested.Start(200);
+
+                Assert.Equal(200, tested.TargetCycleEstimate);
+
+                tested.ReportProgress(100);
+                tested.ReportProgress(200);
+
+                Assert.Equal(2, tested.TargetCycleEstimate, 1);
             }
             [Fact]
             public void RemainingCyclesEstimateIsCorrectEnough()
