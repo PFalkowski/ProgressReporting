@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using Xunit;
 
@@ -335,6 +337,41 @@ namespace ProgressReporting.Test
                 tested.Pause();
                 Assert.False(tested.IsRunning);
                 Assert.True(tested.IsIdle);
+            }
+            [Fact]
+            public void ReportingProgressRaisesPropertyChangedEvents()
+            {
+                var tested = new ProgressReporter();
+                tested.Start(2);
+
+                var receivedEvents = new HashSet<string>();
+
+                tested.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+                {
+                    receivedEvents.Add(e.PropertyName);
+                };
+
+                tested.ReportProgress();
+
+                Assert.Contains(nameof(tested.AverageCycleDuration), receivedEvents);
+                Assert.Contains(nameof(tested.AverageCycleStep), receivedEvents);
+                Assert.Contains(nameof(tested.CompletedPercent), receivedEvents);
+                Assert.Contains(nameof(tested.CompletedRawValue), receivedEvents);
+                Assert.Contains(nameof(tested.CurrentCycle), receivedEvents);
+                Assert.Contains(nameof(tested.CurrentRawValue), receivedEvents);
+                Assert.Contains(nameof(tested.Elapsed), receivedEvents);
+                Assert.Contains(nameof(tested.IsIdle), receivedEvents);
+                Assert.Contains(nameof(tested.IsRunning), receivedEvents);
+                Assert.Contains(nameof(tested.LastCycleStep), receivedEvents);
+                Assert.Contains(nameof(tested.PreviousRawValue), receivedEvents);
+                Assert.Contains(nameof(tested.RemainingCyclesEstimate), receivedEvents);
+                Assert.Contains(nameof(tested.RemainingPercent), receivedEvents);
+                Assert.Contains(nameof(tested.RemainingRawValue), receivedEvents);
+                Assert.Contains(nameof(tested.RemainingTimeEstimate), receivedEvents);
+                Assert.Contains(nameof(tested.UsedAtLestOnce), receivedEvents);
+
+                //Assert.Contains(nameof(tested.TargetCycleEstimate), receivedEvents);
+                //Assert.Contains(nameof(tested.TargetRawValue), receivedEvents);
             }
         }
     }
