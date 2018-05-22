@@ -162,6 +162,26 @@ namespace ProgressReporting.Test
                 Assert.Equal(2, tested.CurrentCycle);
             }
             [Fact]
+            public void LastCycleStepIsCorrect()
+            {
+                var tested = new ProgressReporter();
+                tested.Start(200);
+
+                Assert.Equal(0, tested.LastCycleStep);
+
+                tested.ReportProgress(100);
+
+                Assert.Equal(100, tested.LastCycleStep);
+
+                tested.ReportProgress(150);
+
+                Assert.Equal(50, tested.LastCycleStep);
+
+                tested.ReportProgress(200);
+
+                Assert.Equal(50, tested.LastCycleStep);
+            }
+            [Fact]
             public void CurrentCycleStopsIncrementingAfterCompletion()
             {
                 var tested = new ProgressReporter();

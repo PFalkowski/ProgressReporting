@@ -30,7 +30,7 @@ namespace ProgressReporting
         public double RemainingPercent => 100 - CompletedPercent;
         public TimeSpan Elapsed => Watch.Elapsed;
 
-        public double LastCycleStep => PreviousRawValue > 0 ? PreviousRawValue - CurrentRawValue : CurrentRawValue;
+        public double LastCycleStep => PreviousRawValue > 0 ? CurrentRawValue - PreviousRawValue : CurrentRawValue;
         public double AverageCycleStep => CurrentCycle > 0 ? CurrentRawValue / CurrentCycle : CurrentRawValue;
         public double TargetCycleEstimate => AverageCycleStep > 0 ? TargetRawValue / AverageCycleStep : TargetRawValue;
         public double RemainingCyclesEstimate => TargetCycleEstimate - CurrentCycle;
