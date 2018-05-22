@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="ProgressReporterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TransferProgressTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

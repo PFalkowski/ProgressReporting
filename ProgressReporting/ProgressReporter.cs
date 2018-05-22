@@ -20,6 +20,8 @@ namespace ProgressReporting
         public double TargetRawValue { get; protected set; }
         public bool UsedAtLestOnce { get; protected set; }
         public int CurrentCycle { get; protected set; }
+        public long LastCycleDurationMs { get; protected set; }
+        public long LastCycleTotalMillisecondsElapsed { get; protected set; }
 
         public bool IsRunning => Watch.IsRunning;
         public bool IsIdle => !IsRunning;
@@ -35,6 +37,7 @@ namespace ProgressReporting
         public double TargetCycleEstimate => AverageCycleStep > 0 ? TargetRawValue / AverageCycleStep : TargetRawValue;
         public double RemainingCyclesEstimate => TargetCycleEstimate - CurrentCycle;
 
+        public long CurrentCycleDuration => Watch.ElapsedMilliseconds - LastCycleTotalMillisecondsElapsed;
         public TimeSpan AverageCycleDuration => TimeSpan.FromMilliseconds(CurrentCycle > 0 ? Elapsed.TotalMilliseconds / CurrentCycle : Watch.ElapsedMilliseconds);
         public TimeSpan RemainingTimeEstimate => TimeSpan.FromMilliseconds((CurrentCycle > 0 ? AverageCycleDuration.TotalMilliseconds : Watch.ElapsedMilliseconds) * RemainingCyclesEstimate);
 
@@ -54,6 +57,8 @@ namespace ProgressReporting
 
             if (CurrentRawValue < TargetRawValue)
             {
+                LastCycleDurationMs = CurrentCycleDuration;
+                LastCycleTotalMillisecondsElapsed = Watch.ElapsedMilliseconds;
                 PreviousRawValue = CurrentRawValue;
                 CurrentRawValue = rawProgressValue;
                 ++CurrentCycle;
@@ -84,6 +89,9 @@ namespace ProgressReporting
             NotifyPropertyChanged(nameof(AverageCycleDuration));
             NotifyPropertyChanged(nameof(IsRunning));
             NotifyPropertyChanged(nameof(IsIdle));
+            NotifyPropertyChanged(nameof(LastCycleDurationMs));
+            NotifyPropertyChanged(nameof(LastCycleTotalMillisecondsElapsed));
+            NotifyPropertyChanged(nameof(CurrentCycleDuration));
         }
         public virtual void Start(double targetValue)
         {

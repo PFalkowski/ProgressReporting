@@ -456,6 +456,9 @@ namespace ProgressReporting.Test
                 Assert.Contains(nameof(tested.RemainingRawValue), receivedEvents);
                 Assert.Contains(nameof(tested.RemainingTimeEstimate), receivedEvents);
                 Assert.Contains(nameof(tested.UsedAtLestOnce), receivedEvents);
+                Assert.Contains(nameof(tested.LastCycleTotalMillisecondsElapsed), receivedEvents);
+                Assert.Contains(nameof(tested.CurrentCycleDuration), receivedEvents);
+                Assert.Contains(nameof(tested.LastCycleDurationMs), receivedEvents);
 
                 //Assert.Contains(nameof(tested.TargetCycleEstimate), receivedEvents);
                 //Assert.Contains(nameof(tested.TargetRawValue), receivedEvents);
