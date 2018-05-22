@@ -6,21 +6,24 @@ namespace ProgressReporting
 {
     public class TransferProgress : ProgressReporter, ITransferProgress
     {
-        protected long LastDurationMs;
-        protected long LastElapsedMilliseconds;
-        protected double previousDownloadSpeedKbS;
+        protected long LastCycleDurationMs;
+        protected long LastCycleTotalMillisecondsElapsed;
+        protected double PreviousBitrate;
 
         protected override void Refresh()
         {
             base.Refresh();
-            LastDurationMs = Watch.ElapsedMilliseconds - LastElapsedMilliseconds;
-            LastElapsedMilliseconds = Watch.ElapsedMilliseconds;
+            NotifyPropertyChanged(nameof(AverageBitrateBps));
+            NotifyPropertyChanged(nameof(BitrateBps));
+            NotifyPropertyChanged(nameof(CurrentCycleDuration));
         }
         public override void ReportProgress(double bytesAlreadyTransfered)
         {
+            LastCycleDurationMs = CurrentCycleDuration;
+            LastCycleTotalMillisecondsElapsed = Watch.ElapsedMilliseconds;
             base.ReportProgress(bytesAlreadyTransfered);
         }
-        public double AverageTransferRateBps
+        public double AverageBitrateBps
         {
             get
             {
@@ -29,12 +32,13 @@ namespace ProgressReporting
                 return bytesDownloaded / secondsElapsed;
             }
         }
-        public double TransferRateBps
+        public long CurrentCycleDuration => Watch.ElapsedMilliseconds - LastCycleTotalMillisecondsElapsed;
+        public double BitrateBps
         {
             get
             {
-                if (LastDurationMs == 0) return previousDownloadSpeedKbS;
-                var currentSpeed = (CurrentRawValue - PreviousRawValue) / (LastDurationMs / 1000.0);
+                if (LastCycleDurationMs == 0) return PreviousBitrate;
+                var currentSpeed = (CurrentRawValue - PreviousRawValue) / (LastCycleDurationMs / 1000.0);
                 return currentSpeed;
             }
         }

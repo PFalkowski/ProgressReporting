@@ -28,7 +28,7 @@ namespace ProgressReporting.TestHarness
                 for (int i = 0; i < totalTicks; ++i)
                 {
                     tested.ReportProgress(initial += totalBytes / totalTicks);
-                    pbar.Tick($"transfering {tested.TransferRateBps} B/s (expected {expectedTransferRateKbps} B/s, remaining time: {tested.RemainingTimeEstimate}");
+                    pbar.Tick($"transfering {tested.BitrateBps} B/s (expected {expectedTransferRateKbps} B/s, remaining time: {tested.RemainingTimeEstimate}");
                     //pbar.Tick($"transfering {tested.TransferRateBps} B/s (expected {expectedTransferRateKbps} B/s, average {tested.AverageTransferRateBps}), remaining time: {tested.RemainingTimeEstimate}");
                     Thread.Sleep(millisecondsInSecond);
                 }

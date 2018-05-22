@@ -9,7 +9,7 @@ namespace ProgressReporting
     public class ProgressReporter : IProgressReportable, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string propertyName)
+        protected void NotifyPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
