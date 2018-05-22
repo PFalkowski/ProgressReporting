@@ -45,10 +45,12 @@ namespace ProgressReporting
 
         public virtual void ReportProgress(double rawProgressValue)
         {
-            if (TargetRawValue <= 0.0)
-            {
+            if (IsIdle || TargetRawValue <= 0.0)
                 throw new InvalidOperationException("Start() first");
-            }
+            if (TargetRawValue < rawProgressValue)
+                throw new ArgumentOutOfRangeException(nameof(rawProgressValue));
+            if (rawProgressValue < CurrentRawValue)
+                throw new ArgumentException("progress can not regress");
 
             if (CurrentRawValue < TargetRawValue)
             {
@@ -57,7 +59,7 @@ namespace ProgressReporting
                 ++CurrentCycle;
                 Refresh();
             }
-            if (CurrentRawValue >= TargetRawValue)
+            if (CurrentRawValue >= TargetRawValue) // never make it 'else if' or 'else'
             {
                 Watch.Stop();
             }
@@ -85,6 +87,9 @@ namespace ProgressReporting
         }
         public virtual void Start(double targetValue)
         {
+            if (targetValue <= 0)
+                throw new ArgumentOutOfRangeException(nameof(targetValue));
+
             if (!IsRunning)
             {
                 TargetRawValue = targetValue;
@@ -92,7 +97,19 @@ namespace ProgressReporting
                 UsedAtLestOnce = true;
                 Refresh();
             }
+        }
+        public virtual void Restart(double targetValue)
+        {
+            if (targetValue <= 0)
+                throw new ArgumentOutOfRangeException(nameof(targetValue));
 
+            Watch.Restart();
+            PreviousRawValue = 0;
+            TargetRawValue = targetValue;
+            CurrentRawValue = 0;
+            CurrentCycle = 0;
+            UsedAtLestOnce = true;
+            Refresh();
         }
         public virtual void Pause()
         {
@@ -112,24 +129,12 @@ namespace ProgressReporting
         }
         public virtual void Reset()
         {
-            TargetRawValue = 0;
+            PreviousRawValue = 0;
             CurrentRawValue = 0;
+            TargetRawValue = 0;
             CurrentCycle = 0;
             UsedAtLestOnce = false;
             Watch.Reset();
-            Refresh();
-        }
-        public virtual void Restart(double targetValue)
-        {
-            if (targetValue <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(targetValue));
-            }
-            Watch.Restart();
-            TargetRawValue = targetValue;
-            CurrentRawValue = 0;
-            CurrentCycle = 0;
-            UsedAtLestOnce = true;
             Refresh();
         }
     }

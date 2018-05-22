@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.1.0-alpha</Version>
+    <Description>ProgressReporter estimating remaing time, remaining cycles (iterations), keeping track of average cycle duration. TransferProgress in addition keeps track of current and average bitrate,</Description>
+    <PackageReleaseNotes>initial prerelease</PackageReleaseNotes>
+    <Copyright>Piotr Falkowski © 2018</Copyright>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/PFalkowski/ProgressReporting</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/PFalkowski/ProgressReporting</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>estimating remaing time, progress reporting, transfer progress, bitrate</PackageTags>
   </PropertyGroup>
 
 </Project>
