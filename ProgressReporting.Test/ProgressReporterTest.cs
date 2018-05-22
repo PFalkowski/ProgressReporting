@@ -182,6 +182,73 @@ namespace ProgressReporting.Test
                 Assert.Equal(50, tested.LastCycleStep);
             }
             [Fact]
+            public void AverageCycleStepIsCorrect()
+            {
+                var tested = new ProgressReporter();
+                tested.Start(200);
+
+                Assert.Equal(0, tested.AverageCycleStep);
+
+                tested.ReportProgress(100);
+
+                Assert.Equal(100, tested.AverageCycleStep);
+
+                tested.ReportProgress(150);
+
+                Assert.Equal(75.0, tested.AverageCycleStep, 1);
+
+                tested.ReportProgress(200);
+
+                Assert.Equal(66.7, tested.AverageCycleStep, 1);
+            }
+            [Fact]
+            public void TargetCycleEstimateIsCorrectEnough()
+            {
+                var tested = new ProgressReporter();
+                tested.Start(200);
+
+                Assert.Equal(200, tested.TargetCycleEstimate);
+
+                tested.ReportProgress(99);
+
+                Assert.Equal(2, tested.TargetCycleEstimate, 1);
+
+                tested.ReportProgress(100);
+
+                Assert.Equal(4, tested.TargetCycleEstimate, 1);
+                tested.ReportProgress(101);
+
+                Assert.Equal(5.9, tested.TargetCycleEstimate, 1);
+
+                tested.ReportProgress(200);
+
+                Assert.Equal(4, tested.TargetCycleEstimate, 1);
+            }
+            [Fact]
+            public void RemainingCyclesEstimateIsCorrectEnough()
+            {
+                var tested = new ProgressReporter();
+                tested.Start(200);
+
+                Assert.Equal(200, tested.RemainingCyclesEstimate);
+
+                tested.ReportProgress(99);
+
+                Assert.Equal(1, tested.RemainingCyclesEstimate, 1);
+
+                tested.ReportProgress(100);
+
+                Assert.Equal(2, tested.RemainingCyclesEstimate, 1);
+
+                tested.ReportProgress(101);
+
+                Assert.Equal(2.9, tested.RemainingCyclesEstimate, 1);
+
+                tested.ReportProgress(200);
+
+                Assert.Equal(0, tested.RemainingCyclesEstimate, 1);
+            }
+            [Fact]
             public void CurrentCycleStopsIncrementingAfterCompletion()
             {
                 var tested = new ProgressReporter();
@@ -392,6 +459,36 @@ namespace ProgressReporting.Test
 
                 //Assert.Contains(nameof(tested.TargetCycleEstimate), receivedEvents);
                 //Assert.Contains(nameof(tested.TargetRawValue), receivedEvents);
+            }
+            [Fact]
+            public void PausePauses()
+            {
+                var tested = new ProgressReporter();
+                tested.Start(2);
+
+                tested.ReportProgress();
+                tested.Pause();
+
+                var elapsed = tested.Elapsed;
+                Thread.Sleep(1);
+
+                Assert.Equal(elapsed, tested.Elapsed);
+                Assert.False(tested.IsRunning);
+                Assert.True(tested.IsIdle);
+            }
+            [Fact]
+            public void UnpauseUnpauses()
+            {
+                var tested = new ProgressReporter();
+                tested.Start(2);
+
+                tested.ReportProgress();
+                tested.Pause();
+
+                tested.UnPause();
+                var elapsed = tested.Elapsed;
+                Thread.Sleep(1);
+                Assert.True(tested.Elapsed > elapsed);
             }
         }
     }
