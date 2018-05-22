@@ -6,7 +6,6 @@ namespace ProgressReporting
 {
     public class TransferProgress : ProgressReporter, ITransferProgress
     {
-        protected long PreviousIteration;
         protected long LastDurationMs;
         protected long LastElapsedMilliseconds;
         protected double previousDownloadSpeedKbS;
@@ -16,49 +15,38 @@ namespace ProgressReporting
             base.Refresh();
             LastDurationMs = Watch.ElapsedMilliseconds - LastElapsedMilliseconds;
             LastElapsedMilliseconds = Watch.ElapsedMilliseconds;
-
         }
-        public override void ReportProgress(long bytesAlreadyTransfered)
+        public override void ReportProgress(double bytesAlreadyTransfered)
         {
-            if (IsRunning && CurrentRawValue < TargetRawProgressValue)
-            {
-                PreviousIteration = CurrentRawValue;
-                CurrentRawValue = bytesAlreadyTransfered;
-                Refresh();
-            }
-            if (CurrentRawValue >= TargetRawProgressValue)
-            {
-                Watch.Stop();
-            }
+            base.ReportProgress(bytesAlreadyTransfered);
         }
-        public double AverageSpeedKbpS
+        public double AverageTransferRateBps
         {
             get
             {
-                var kbDownloaded = CurrentRawValue / 1024.0;
+                var bytesDownloaded = CurrentRawValue;
                 var secondsElapsed = Watch.Elapsed.TotalSeconds;
-                return kbDownloaded / secondsElapsed;
+                return bytesDownloaded / secondsElapsed;
             }
         }
-        public double CurrentSpeedKbpS
+        public double TransferRateBps
         {
             get
             {
                 if (LastDurationMs == 0) return previousDownloadSpeedKbS;
-                var currentSpeed = (CurrentRawValue - PreviousIteration) / 1024.0 / (LastDurationMs / 1000.0);
-                previousDownloadSpeedKbS = currentSpeed;
-                return (currentSpeed + previousDownloadSpeedKbS) / 2;
+                var currentSpeed = (CurrentRawValue - PreviousRawValue) / (LastDurationMs / 1000.0);
+                return currentSpeed;
             }
         }
         public override void Reset()
         {
             base.Reset();
-            PreviousIteration = 0;
+            PreviousRawValue = 0;
         }
-        public override void Restart(long iterationsNumber)
+        public override void Restart(double totalBytesToTransfer)
         {
-            base.Restart(iterationsNumber);
-            PreviousIteration = 0;
+            base.Restart(totalBytesToTransfer);
+            PreviousRawValue = 0;
         }
     }
 }

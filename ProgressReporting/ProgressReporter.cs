@@ -6,7 +6,6 @@ using System.Text;
 
 namespace ProgressReporting
 {
-
     public class ProgressReporter : IProgressReportable, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -16,34 +15,49 @@ namespace ProgressReporting
         }
 
         protected readonly Stopwatch Watch = new Stopwatch();
-        public long CurrentRawValue { get; protected set; }
-        public long TargetRawProgressValue { get; protected set; }
+        public double CurrentRawValue { get; protected set; }
+        public double PreviousRawValue { get; protected set; }
+        public double TargetRawValue { get; protected set; }
         public bool UsedAtLestOnce { get; protected set; }
+        public int CurrentCycle { get; protected set; }
 
         public bool IsRunning => Watch.IsRunning;
         public bool IsIdle => !IsRunning;
-        public long CompletedRawValue => CurrentRawValue;
-        public long RemainingRawValue => TargetRawProgressValue - CurrentRawValue;
-        public double CompletedPercent => TargetRawProgressValue == 0 ? 0 : (double)CurrentRawValue / TargetRawProgressValue * 100;
+        public double CompletedRawValue => CurrentRawValue;
+        public double RemainingRawValue => TargetRawValue - CurrentRawValue;
+
+        public double CompletedPercent => TargetRawValue == 0 ? 0 : CurrentRawValue / TargetRawValue * 100;
         public double RemainingPercent => 100 - CompletedPercent;
         public TimeSpan Elapsed => Watch.Elapsed;
-        public TimeSpan RemainingTimeEstimate => TimeSpan.FromMilliseconds((CurrentRawValue == 0 ? Watch.ElapsedMilliseconds : AverageUnitDuration.TotalMilliseconds) * RemainingRawValue);
-        public TimeSpan AverageUnitDuration => TimeSpan.FromMilliseconds(CurrentRawValue == 0 ? 0 : (double)Elapsed.TotalMilliseconds / (double)CurrentRawValue);
+
+        public double LastCycleStep => PreviousRawValue > 0 ? PreviousRawValue - CurrentRawValue : CurrentRawValue;
+        public double AverageCycleStep => CurrentCycle > 0 ? CurrentRawValue / CurrentCycle : CurrentRawValue;
+        public double TargetCycleEstimate => AverageCycleStep > 0 ? TargetRawValue / AverageCycleStep : TargetRawValue;
+        public double RemainingCyclesEstimate => TargetCycleEstimate - CurrentCycle;
+
+        public TimeSpan AverageCycleDuration => TimeSpan.FromMilliseconds(CurrentCycle > 0 ? Elapsed.TotalMilliseconds / CurrentCycle : Watch.ElapsedMilliseconds);
+        public TimeSpan RemainingTimeEstimate => TimeSpan.FromMilliseconds((CurrentCycle > 0 ? AverageCycleDuration.TotalMilliseconds : Watch.ElapsedMilliseconds) * RemainingCyclesEstimate);
 
         public void ReportProgress()
         {
             ReportProgress(CurrentRawValue + 1);
         }
 
-        public virtual void ReportProgress(long RawProgressValue)
+        public virtual void ReportProgress(double rawProgressValue)
         {
-            if (IsIdle && CurrentRawValue == 0) throw new InvalidOperationException("Start() for specific number of iterations.");
-            if (CurrentRawValue < TargetRawProgressValue)
+            if (TargetRawValue <= 0.0)
             {
-                CurrentRawValue = RawProgressValue;
+                throw new InvalidOperationException("Start() first");
+            }
+
+            if (CurrentRawValue < TargetRawValue)
+            {
+                PreviousRawValue = CurrentRawValue;
+                CurrentRawValue = rawProgressValue;
+                ++CurrentCycle;
                 Refresh();
             }
-            if (CurrentRawValue >= TargetRawProgressValue)
+            if (CurrentRawValue >= TargetRawValue)
             {
                 Watch.Stop();
             }
@@ -52,6 +66,12 @@ namespace ProgressReporting
         protected virtual void Refresh()
         {
             NotifyPropertyChanged(nameof(CurrentRawValue));
+            NotifyPropertyChanged(nameof(PreviousRawValue));
+            NotifyPropertyChanged(nameof(AverageCycleStep));
+            NotifyPropertyChanged(nameof(TargetCycleEstimate));
+            NotifyPropertyChanged(nameof(RemainingCyclesEstimate));
+            NotifyPropertyChanged(nameof(CurrentCycle));
+            NotifyPropertyChanged(nameof(LastCycleStep));
             NotifyPropertyChanged(nameof(UsedAtLestOnce));
             NotifyPropertyChanged(nameof(CompletedPercent));
             NotifyPropertyChanged(nameof(RemainingPercent));
@@ -59,11 +79,21 @@ namespace ProgressReporting
             NotifyPropertyChanged(nameof(RemainingRawValue));
             NotifyPropertyChanged(nameof(RemainingTimeEstimate));
             NotifyPropertyChanged(nameof(Elapsed));
-            NotifyPropertyChanged(nameof(AverageUnitDuration));
+            NotifyPropertyChanged(nameof(AverageCycleDuration));
             NotifyPropertyChanged(nameof(IsRunning));
             NotifyPropertyChanged(nameof(IsIdle));
         }
+        public virtual void Start(double targetValue)
+        {
+            if (!IsRunning)
+            {
+                TargetRawValue = targetValue;
+                Watch.Start();
+                UsedAtLestOnce = true;
+                Refresh();
+            }
 
+        }
         public virtual void Pause()
         {
             if (IsRunning)
@@ -82,30 +112,25 @@ namespace ProgressReporting
         }
         public virtual void Reset()
         {
-            TargetRawProgressValue = 0;
+            TargetRawValue = 0;
             CurrentRawValue = 0;
+            CurrentCycle = 0;
             UsedAtLestOnce = false;
             Watch.Reset();
             Refresh();
         }
-        public virtual void Restart(long iterationsNumber)
+        public virtual void Restart(double targetValue)
         {
-            if (iterationsNumber <= 0)
+            if (targetValue <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(iterationsNumber));
+                throw new ArgumentOutOfRangeException(nameof(targetValue));
             }
-            TargetRawProgressValue = iterationsNumber;
-            CurrentRawValue = 0;
-            UsedAtLestOnce = true;
             Watch.Restart();
+            TargetRawValue = targetValue;
+            CurrentRawValue = 0;
+            CurrentCycle = 0;
+            UsedAtLestOnce = true;
             Refresh();
-        }
-
-        public static ProgressReporter StartNew(long iterationsNumber)
-        {
-            var progressTool = new ProgressReporter();
-            progressTool.Restart(iterationsNumber);
-            return progressTool;
         }
     }
 }

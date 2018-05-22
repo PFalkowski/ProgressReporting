@@ -6,7 +6,7 @@ namespace ProgressReporting
 {
     public interface ITransferProgress : IProgressReportable
     {
-        double AverageSpeedKbpS { get; }
-        double CurrentSpeedKbpS { get; }
+        double AverageTransferRateBps { get; }
+        double TransferRateBps { get; }
     }
 }

@@ -10,16 +10,16 @@ namespace ProgressReporting
         event PropertyChangedEventHandler PropertyChanged;
         bool IsIdle { get; }
         bool IsRunning { get; }
-        long CompletedRawValue { get; }
-        long RemainingRawValue { get; }
+        double CompletedRawValue { get; }
+        double RemainingRawValue { get; }
         double CompletedPercent { get; }
         double RemainingPercent { get; }
         TimeSpan Elapsed { get; }
         TimeSpan RemainingTimeEstimate { get; }
-        TimeSpan AverageUnitDuration { get; }
-        void ReportProgress(long RawProgressValue);
+        TimeSpan AverageCycleDuration { get; }
+        void ReportProgress(double RawProgressValue);
         void ReportProgress();
-        void Restart(long iterationsNumber);
+        void Restart(double iterationsNumber);
         void Pause();
         void UnPause();
         void Reset();
