@@ -10,6 +10,31 @@ namespace ProgressReporting.Test
     public class TransferProgressTest
     {
         [Fact]
+        public void Integration()
+        {
+            const int bytesToTransfer = 10000;
+            var tested = new TransferProgress();
+            tested.Start(bytesToTransfer);
+
+            tested.ReportProgress(9999);
+            tested.Pause();
+            Assert.True(tested.BitrateBps > 0);
+            Assert.True(tested.IsRunning);
+            Assert.True(tested.Elapsed.TotalMilliseconds < 1000);
+            Assert.True(tested.RemainingTimeEstimate.TotalMilliseconds < 1000);
+
+            tested.UnPause();
+            Thread.Sleep(1000);
+
+            tested.ReportProgress(10000);
+            Assert.False(tested.IsRunning);
+            Assert.True(tested.Elapsed.TotalMilliseconds >= 1000);
+            Assert.True(tested.RemainingTimeEstimate.TotalMilliseconds < 10);
+            Assert.True(tested.BitrateBps < bytesToTransfer / 4 && tested.BitrateBps > 0);
+            // tested.BitrateBps == 
+
+        }
+        [Fact]
         public void TransferProgressHasValidStateAfterCreation()
         {
             var tested = new TransferProgress();
