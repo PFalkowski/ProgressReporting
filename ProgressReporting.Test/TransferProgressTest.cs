@@ -19,7 +19,7 @@ namespace ProgressReporting.Test
             tested.ReportProgress(9999);
             tested.Pause();
             Assert.True(tested.BitrateBps > 0);
-            Assert.True(tested.IsRunning);
+            Assert.False(tested.IsRunning);
             Assert.True(tested.Elapsed.TotalMilliseconds < 1000);
             Assert.True(tested.RemainingTimeEstimate.TotalMilliseconds < 1000);
 
@@ -31,8 +31,6 @@ namespace ProgressReporting.Test
             Assert.True(tested.Elapsed.TotalMilliseconds >= 1000);
             Assert.True(tested.RemainingTimeEstimate.TotalMilliseconds < 10);
             Assert.True(tested.BitrateBps < bytesToTransfer / 4 && tested.BitrateBps > 0);
-            // tested.BitrateBps == 
-
         }
         [Fact]
         public void TransferProgressHasValidStateAfterCreation()
