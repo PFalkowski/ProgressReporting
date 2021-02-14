@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 
 namespace ProgressReporting
 {
@@ -17,9 +15,9 @@ namespace ProgressReporting
         TimeSpan Elapsed { get; }
         TimeSpan RemainingTimeEstimate { get; }
         TimeSpan AverageCycleDuration { get; }
-        void ReportProgress(double RawProgressValue);
+        void ReportProgress(double rawProgressValue);
         void ReportProgress();
-        void Restart(double RawTargetValue);
+        void Restart(double rawTargetValue);
         void Pause();
         void UnPause();
         void Reset();
