@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ProgressReporting
+﻿namespace ProgressReporting
 {
     public class TransferProgress : ProgressReporter, ITransferProgress
     {
@@ -14,9 +10,9 @@ namespace ProgressReporting
             NotifyPropertyChanged(nameof(AverageBitrateBps));
             NotifyPropertyChanged(nameof(BitrateBps));
         }
-        public override void ReportProgress(double bytesAlreadyTransfered)
+        public override void ReportProgress(double bytesAlreadyTransferred)
         {
-            base.ReportProgress(bytesAlreadyTransfered);
+            base.ReportProgress(bytesAlreadyTransferred);
             Refresh();
         }
         public double AverageBitrateBps
