@@ -39,32 +39,40 @@ namespace ProgressReporting
         public TimeSpan AverageCycleDuration => TimeSpan.FromMilliseconds(CurrentCycle > 0 ? Elapsed.TotalMilliseconds / CurrentCycle : Watch.ElapsedMilliseconds);
         public TimeSpan RemainingTimeEstimate => TimeSpan.FromMilliseconds((CurrentCycle > 0 ? AverageCycleDuration.TotalMilliseconds : Watch.ElapsedMilliseconds) * RemainingCyclesEstimate);
 
+        private object _syncRoot = new object();
+
         public void ReportProgress()
         {
-            ReportProgress(CurrentRawValue + 1);
+            lock (_syncRoot)
+            {
+                ReportProgress(CurrentRawValue + 1);
+            }
         }
 
         public virtual void ReportProgress(double rawProgressValue)
         {
-            if (IsIdle || TargetRawValue <= 0.0)
-                throw new InvalidOperationException("Start() first");
-            if (TargetRawValue < rawProgressValue)
-                throw new ArgumentOutOfRangeException(nameof(rawProgressValue));
-            if (rawProgressValue < CurrentRawValue)
-                throw new ArgumentException("progress can not regress");
+            lock (_syncRoot)
+            {
+                if (IsIdle || TargetRawValue <= 0.0)
+                    throw new InvalidOperationException("Start() first");
+                if (TargetRawValue < rawProgressValue)
+                    throw new ArgumentOutOfRangeException(nameof(rawProgressValue));
+                if (rawProgressValue < CurrentRawValue)
+                    throw new ArgumentException("progress can not regress");
 
-            if (CurrentRawValue < TargetRawValue)
-            {
-                LastCycleDurationMs = CurrentCycleDuration;
-                LastCycleTotalMillisecondsElapsed = Watch.ElapsedMilliseconds;
-                PreviousRawValue = CurrentRawValue;
-                CurrentRawValue = rawProgressValue;
-                ++CurrentCycle;
-                Refresh();
-            }
-            if (CurrentRawValue >= TargetRawValue) // never make it 'else if' or 'else'
-            {
-                Watch.Stop();
+                if (CurrentRawValue < TargetRawValue)
+                {
+                    LastCycleDurationMs = CurrentCycleDuration;
+                    LastCycleTotalMillisecondsElapsed = Watch.ElapsedMilliseconds;
+                    PreviousRawValue = CurrentRawValue;
+                    CurrentRawValue = rawProgressValue;
+                    ++CurrentCycle;
+                    Refresh();
+                }
+                if (CurrentRawValue >= TargetRawValue) // never make it 'else if' or 'else'
+                {
+                    Watch.Stop();
+                }
             }
         }
 
@@ -93,55 +101,70 @@ namespace ProgressReporting
         }
         public virtual void Start(double targetValue)
         {
-            if (targetValue <= 0)
-                throw new ArgumentOutOfRangeException(nameof(targetValue));
-
-            if (!IsRunning)
+            lock (_syncRoot)
             {
-                TargetRawValue = targetValue;
-                Watch.Start();
-                UsedAtLestOnce = true;
-                Refresh();
+                if (targetValue <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(targetValue));
+
+                if (!IsRunning)
+                {
+                    TargetRawValue = targetValue;
+                    Watch.Start();
+                    UsedAtLestOnce = true;
+                    Refresh();
+                }
             }
         }
         public virtual void Restart(double targetValue)
         {
-            if (targetValue <= 0)
-                throw new ArgumentOutOfRangeException(nameof(targetValue));
+            lock (_syncRoot)
+            {
+                if (targetValue <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(targetValue));
 
-            Watch.Restart();
-            PreviousRawValue = 0;
-            TargetRawValue = targetValue;
-            CurrentRawValue = 0;
-            CurrentCycle = 0;
-            UsedAtLestOnce = true;
-            Refresh();
+                Watch.Restart();
+                PreviousRawValue = 0;
+                TargetRawValue = targetValue;
+                CurrentRawValue = 0;
+                CurrentCycle = 0;
+                UsedAtLestOnce = true;
+                Refresh();
+            }
         }
         public virtual void Pause()
         {
-            if (IsRunning)
+            lock (_syncRoot)
             {
-                Watch.Stop();
-                Refresh();
+                if (IsRunning)
+                {
+                    Watch.Stop();
+                    Refresh();
+                }
             }
         }
         public virtual void UnPause()
         {
-            if (!IsRunning)
+            lock (_syncRoot)
             {
-                Watch.Start();
-                Refresh();
+                if (!IsRunning)
+                {
+                    Watch.Start();
+                    Refresh();
+                }
             }
         }
         public virtual void Reset()
         {
-            PreviousRawValue = 0;
-            CurrentRawValue = 0;
-            TargetRawValue = 0;
-            CurrentCycle = 0;
-            UsedAtLestOnce = false;
-            Watch.Reset();
-            Refresh();
+            lock (_syncRoot)
+            {
+                PreviousRawValue = 0;
+                CurrentRawValue = 0;
+                TargetRawValue = 0;
+                CurrentCycle = 0;
+                UsedAtLestOnce = false;
+                Watch.Reset();
+                Refresh();
+            }
         }
     }
 }
