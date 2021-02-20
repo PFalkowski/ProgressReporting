@@ -35,7 +35,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void TransferProgressHasValidStateAfterCreation()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             Assert.Equal(0, tested.AverageBitrateBps);
             Assert.Equal(0, tested.BitrateBps);
             Assert.True(tested.IsIdle);
@@ -140,7 +140,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ReportingProgressWithArguementProperlyUpdatesRawValue()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(200);
 
             Assert.Equal(0, tested.CurrentRawValue, 1);
@@ -156,7 +156,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ReportingProgressWithArguementProperlyUpdatesRemainingRawValue()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(200);
 
             Assert.Equal(200, tested.RemainingRawValue, 1);
@@ -172,7 +172,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ReportingProgressWithArguementProperlyUpdatesCurrentCycle()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(200);
 
             Assert.Equal(0, tested.CurrentCycle);
@@ -188,7 +188,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void LastCycleStepIsCorrect()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(200);
 
             Assert.Equal(0, tested.LastCycleStep);
@@ -208,7 +208,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void AverageCycleStepIsCorrect()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(200);
 
             Assert.Equal(0, tested.AverageCycleStep);
@@ -228,7 +228,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void TargetCycleEstimateIsCorrectEnough()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(200);
 
             Assert.Equal(200, tested.TargetCycleEstimate);
@@ -251,7 +251,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void RemainingCyclesEstimateIsCorrectEnough()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(200);
 
             Assert.Equal(200, tested.RemainingCyclesEstimate);
@@ -275,7 +275,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void CurrentCycleStopsIncrementingAfterCompletion()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(200);
             tested.ReportProgress(200);
             try { tested.ReportProgress(200); } catch { }
@@ -288,14 +288,14 @@ namespace ProgressReporting.Test
         [Fact]
         public void CurrentCycleCannotBeGreaterThanTargetValue()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(200);
             Assert.Throws<ArgumentOutOfRangeException>(() => tested.ReportProgress(201));
         }
         [Fact]
         public void ProgressCannotRegress()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(200);
 
             tested.ReportProgress(100);
@@ -304,7 +304,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ProgressCannotRegress2()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(4);
 
             tested.ReportProgress();
@@ -316,7 +316,7 @@ namespace ProgressReporting.Test
         [InlineData(100)]
         public void ReportingProgressProperlyUpdatesRemaingPercent(int iterations)
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(iterations);
             var step = 100 / iterations;
 
@@ -331,25 +331,25 @@ namespace ProgressReporting.Test
         [Fact]
         public void ThrowsExceptionWhenTargetValueInvalid()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             Assert.Throws<ArgumentOutOfRangeException>(() => { tested.Start(-100); });
         }
         [Fact]
         public void ThrowsExceptionWhenNotStarted()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             Assert.Throws<InvalidOperationException>(() => { tested.ReportProgress(100); });
         }
         [Fact]
         public void ThrowsExceptionWhenNotStarted2()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             Assert.Throws<InvalidOperationException>(() => { tested.ReportProgress(); });
         }
         [Fact]
-        public void TransferProgressCompletedPercentNeverGoesAbove100()
+        public void TestedTransferProgressCompletedPercentNeverGoesAbove100()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(1);
             tested.ReportProgress();
             try { tested.ReportProgress(); } catch { }
@@ -359,7 +359,7 @@ namespace ProgressReporting.Test
         public void ResetResetsCompletly()
         {
             // Arrange 
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
 
             // Act
             tested.Restart(2);
@@ -387,9 +387,9 @@ namespace ProgressReporting.Test
             Assert.Equal(0, tested.TargetRawValue);
         }
         [Fact]
-        public void ReportProgressTest()
+        public void ReportProgressThrowExceptionWhenTargetIsZero()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
 
             Assert.Throws<InvalidOperationException>(() => { tested.ReportProgress(); });
         }
@@ -397,7 +397,7 @@ namespace ProgressReporting.Test
         public void ReportProgressTest2()
         {
             const int numberOfIterations = 10;
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             Thread.Sleep(1);
             Assert.Equal(0L, tested.Elapsed.TotalMilliseconds);
             Assert.False(tested.IsRunning);
@@ -423,7 +423,7 @@ namespace ProgressReporting.Test
         public void FinishTest()
         {
             const int numberOfIterations = 5;
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
 
             Assert.False(tested.IsRunning);
             tested.Restart(numberOfIterations * 2);
@@ -442,7 +442,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void PauseDoesNothingWhenNotRunning()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             Assert.False(tested.IsRunning);
             Assert.True(tested.IsIdle);
             tested.Pause();
@@ -452,7 +452,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ReportingProgressRaisesPropertyChangedEvents()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(2);
 
             var receivedEvents = new HashSet<string>();
@@ -492,7 +492,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void PausePauses()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(2);
 
             tested.ReportProgress();
@@ -508,7 +508,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void UnpauseUnpauses()
         {
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(2);
 
             tested.ReportProgress();
@@ -528,7 +528,7 @@ namespace ProgressReporting.Test
             const int cycles = 2;
             const int bytesChunk = 10000 / cycles;
             var bytesTransferred = 0;
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(bytesToTransfer);
 
             // Act & Assert
@@ -547,7 +547,7 @@ namespace ProgressReporting.Test
             const int cycles = 2;
             const int bytesChunk = 10000 / cycles;
             var bytesTransferred = 0;
-            var tested = new TransferProgress();
+            var tested = new TestedTransferProgress();
             tested.Start(bytesToTransfer);
 
             // Act & Assert

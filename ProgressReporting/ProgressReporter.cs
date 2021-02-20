@@ -13,30 +13,30 @@ namespace ProgressReporting
         }
 
         protected readonly Stopwatch Watch = new Stopwatch();
-        public double CurrentRawValue { get; protected set; }
-        public double PreviousRawValue { get; protected set; }
-        public double TargetRawValue { get; protected set; }
-        public bool UsedAtLestOnce { get; protected set; }
-        public int CurrentCycle { get; protected set; }
-        public long LastCycleDurationMs { get; protected set; }
-        public long LastCycleTotalMillisecondsElapsed { get; protected set; }
+        protected double CurrentRawValue { get; set; }
+        protected double PreviousRawValue { get; set; }
+        protected double TargetRawValue { get; set; }
+        protected bool UsedAtLestOnce { get; set; }
+        protected int CurrentCycle { get; set; }
+        protected long LastCycleDurationMs { get; set; }
+        protected long LastCycleTotalMillisecondsElapsed { get; set; }
 
         public bool IsRunning => Watch.IsRunning;
         public bool IsIdle => !IsRunning;
-        public double CompletedRawValue => CurrentRawValue;
-        public double RemainingRawValue => TargetRawValue - CurrentRawValue;
+        protected double CompletedRawValue => CurrentRawValue;
+        protected double RemainingRawValue => TargetRawValue - CurrentRawValue;
 
         public double CompletedPercent => TargetRawValue == 0 ? 0 : CurrentRawValue / TargetRawValue * 100;
         public double RemainingPercent => 100 - CompletedPercent;
         public TimeSpan Elapsed => Watch.Elapsed;
 
-        public double LastCycleStep => PreviousRawValue > 0 ? CurrentRawValue - PreviousRawValue : CurrentRawValue;
-        public double AverageCycleStep => CurrentCycle > 0 ? CurrentRawValue / CurrentCycle : CurrentRawValue;
-        public double TargetCycleEstimate => AverageCycleStep > 0 ? TargetRawValue / AverageCycleStep : TargetRawValue;
-        public double RemainingCyclesEstimate => TargetCycleEstimate - CurrentCycle;
+        protected double LastCycleStep => PreviousRawValue > 0 ? CurrentRawValue - PreviousRawValue : CurrentRawValue;
+        protected double AverageCycleStep => CurrentCycle > 0 ? CurrentRawValue / CurrentCycle : CurrentRawValue;
+        protected double TargetCycleEstimate => AverageCycleStep > 0 ? TargetRawValue / AverageCycleStep : TargetRawValue;
+        protected double RemainingCyclesEstimate => TargetCycleEstimate - CurrentCycle;
 
-        public long CurrentCycleDuration => Watch.ElapsedMilliseconds - LastCycleTotalMillisecondsElapsed;
-        public TimeSpan AverageCycleDuration => TimeSpan.FromMilliseconds(CurrentCycle > 0 ? Elapsed.TotalMilliseconds / CurrentCycle : Watch.ElapsedMilliseconds);
+        protected long CurrentCycleDuration => Watch.ElapsedMilliseconds - LastCycleTotalMillisecondsElapsed;
+        protected TimeSpan AverageCycleDuration => TimeSpan.FromMilliseconds(CurrentCycle > 0 ? Elapsed.TotalMilliseconds / CurrentCycle : Watch.ElapsedMilliseconds);
         public TimeSpan RemainingTimeEstimate => TimeSpan.FromMilliseconds((CurrentCycle > 0 ? AverageCycleDuration.TotalMilliseconds : Watch.ElapsedMilliseconds) * RemainingCyclesEstimate);
 
         private object _syncRoot = new object();
@@ -53,8 +53,12 @@ namespace ProgressReporting
         {
             lock (_syncRoot)
             {
-                if (IsIdle || TargetRawValue <= 0.0)
-                    throw new InvalidOperationException("Start() first");
+                if (IsIdle && TargetRawValue <= 0.0)
+                    throw new InvalidOperationException("Start the reporter first.");
+                if (IsIdle)
+                    return;
+                if (TargetRawValue <= 0.0)
+                    throw new InvalidOperationException("Target value must be greater than 0.");
                 if (TargetRawValue < rawProgressValue)
                     throw new ArgumentOutOfRangeException(nameof(rawProgressValue));
                 if (rawProgressValue < CurrentRawValue)
@@ -78,6 +82,7 @@ namespace ProgressReporting
 
         protected virtual void Refresh()
         {
+            if (PropertyChanged == null) return;
             NotifyPropertyChanged(nameof(CurrentRawValue));
             NotifyPropertyChanged(nameof(PreviousRawValue));
             NotifyPropertyChanged(nameof(AverageCycleStep));

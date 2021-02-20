@@ -59,6 +59,8 @@
   <ItemGroup>
     <Compile Include="ProgressReporterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestedProgressReporter.cs" />
+    <Compile Include="TestedTransferProgress.cs" />
     <Compile Include="TransferProgressTest.cs" />
   </ItemGroup>
   <ItemGroup>

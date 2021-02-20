@@ -12,7 +12,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ProgressReporterHasValidStateAfterCreation()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             Assert.True(tested.IsIdle);
             Assert.False(tested.IsRunning);
             Assert.False(tested.UsedAtLestOnce);
@@ -36,7 +36,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ProgressReporterIsIdleIsCorrect()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(1);
             Assert.False(tested.IsIdle);
             tested.ReportProgress();
@@ -48,7 +48,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ProgressReporterCompletedPercentIsCorrect()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(1);
             Assert.Equal(0, tested.CompletedPercent);
             tested.ReportProgress();
@@ -58,7 +58,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ProgressReporterCompletedPercentIsCorrect2()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Restart(2);
 
             Assert.Equal(0, tested.CompletedPercent);
@@ -122,7 +122,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ReportingProgressWithArgumentProperlyUpdatesRawValue()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
 
             Assert.Equal(0, tested.CurrentRawValue, 1);
@@ -139,7 +139,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ReportingProgressWithArgumentProperlyUpdatesRemainingRawValue()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
 
             Assert.Equal(200, tested.RemainingRawValue, 1);
@@ -156,7 +156,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ReportingProgressWithArgumentProperlyUpdatesCurrentCycle()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
 
             Assert.Equal(0, tested.CurrentCycle);
@@ -173,7 +173,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void LastCycleStepIsCorrect()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
 
             Assert.Equal(0, tested.LastCycleStep);
@@ -194,7 +194,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void AverageCycleStepIsCorrect()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
 
             Assert.Equal(0, tested.AverageCycleStep);
@@ -215,7 +215,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void TargetCycleEstimateIsCorrectEnough()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
 
             Assert.Equal(200, tested.TargetCycleEstimate);
@@ -236,7 +236,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void TargetCycleEstimateIsZeroWhenFinished()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
 
             Assert.Equal(200, tested.TargetCycleEstimate);
@@ -250,7 +250,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void RemainingCyclesEstimateIsCorrectEnough()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
 
             Assert.Equal(200, tested.RemainingCyclesEstimate);
@@ -275,7 +275,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void CurrentCycleStopsIncrementingAfterCompletion()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
             tested.ReportProgress(200);
             try { tested.ReportProgress(200); } catch { }
@@ -289,7 +289,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void CurrentCycleCannotBeGreaterThanTargetValue()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
             Assert.Throws<ArgumentOutOfRangeException>(() => tested.ReportProgress(201));
         }
@@ -297,7 +297,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ProgressCannotRegress()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(200);
 
             tested.ReportProgress(100);
@@ -307,7 +307,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ProgressCannotRegress2()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(4);
 
             tested.ReportProgress();
@@ -320,7 +320,7 @@ namespace ProgressReporting.Test
         [InlineData(100)]
         public void ReportingProgressProperlyUpdatesRemaingPercent(int iterations)
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(iterations);
             var step = 100 / iterations;
 
@@ -336,28 +336,28 @@ namespace ProgressReporting.Test
         [Fact]
         public void ThrowsExceptionWhenTargetValueInvalid()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             Assert.Throws<ArgumentOutOfRangeException>(() => { tested.Start(-100); });
         }
 
         [Fact]
         public void ThrowsExceptionWhenNotStarted()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             Assert.Throws<InvalidOperationException>(() => { tested.ReportProgress(100); });
         }
 
         [Fact]
         public void ThrowsExceptionWhenNotStarted2()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             Assert.Throws<InvalidOperationException>(() => { tested.ReportProgress(); });
         }
 
         [Fact]
-        public void ProgressReporterCompletedPercentNeverGoesAbove100()
+        public void TestedProgressReporterCompletedPercentNeverGoesAbove100()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(1);
             tested.ReportProgress();
             try { tested.ReportProgress(); } catch { }
@@ -368,7 +368,7 @@ namespace ProgressReporting.Test
         public void ResetResetsCompletely()
         {
             // Arrange 
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
 
             // Act
             tested.Restart(2);
@@ -399,7 +399,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ReportProgressTest()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
 
             Assert.Throws<InvalidOperationException>(() => { tested.ReportProgress(); });
         }
@@ -408,7 +408,7 @@ namespace ProgressReporting.Test
         public void ReportProgressTest2()
         {
             const int numberOfIterations = 10;
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             Thread.Sleep(1);
             Assert.Equal(0L, tested.Elapsed.TotalMilliseconds);
             Assert.False(tested.IsRunning);
@@ -435,7 +435,7 @@ namespace ProgressReporting.Test
         public void FinishTest()
         {
             const int numberOfIterations = 5;
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
 
             Assert.False(tested.IsRunning);
             tested.Restart(numberOfIterations * 2);
@@ -455,7 +455,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void PauseDoesNothingWhenNotRunning()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             Assert.False(tested.IsRunning);
             Assert.True(tested.IsIdle);
             tested.Pause();
@@ -466,7 +466,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ReportingProgressRaisesPropertyChangedEvents()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(2);
 
             var receivedEvents = new HashSet<string>();
@@ -502,7 +502,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void PausePauses()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(2);
 
             tested.ReportProgress();
@@ -519,7 +519,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void UnpauseUnpauses()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(2);
 
             tested.ReportProgress();
@@ -534,7 +534,7 @@ namespace ProgressReporting.Test
         [Fact]
         public void ProgressReportProgressIsThreadSafe()
         {
-            var tested = new ProgressReporter();
+            var tested = new TestedProgressReporter();
             tested.Start(100);
 
             Parallel.For(0, 100, (i) =>
