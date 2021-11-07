@@ -1,6 +1,5 @@
-﻿using ShellProgressBar;
-using System;
-using System.Threading;
+﻿using System.Threading;
+using Konsole;
 
 namespace ProgressReporting.TestHarness
 {
@@ -8,30 +7,23 @@ namespace ProgressReporting.TestHarness
     {
         static void Main(string[] args)
         {
-            var totalBytes = 1000000;
-            var initial = 0;
-            const int totalTicks = 10;
-            const int millisecondsInSecond = 1000;
-            var step = totalBytes / totalTicks;
+            const int finalValue = 30;
+            var progressReporter = new ProgressReporter();
+            progressReporter.Restart(finalValue);
+            var progressBar = new ProgressBar(finalValue);
 
-            var expectedTransferRateKbps = step;
-
-            TransferProgress tested = new TransferProgress();
-            tested.Restart(totalBytes);
-            var options = new ProgressBarOptions
+            for (int i = 0; i < finalValue; i++)
             {
-                ProgressCharacter = '─',
-                ProgressBarOnBottom = true
-            };
-            using (var pbar = new ProgressBar(totalTicks, "Initial message", options))
-            {
-                for (int i = 0; i < totalTicks; ++i)
+                if (i % 2 == 0)
                 {
-                    tested.ReportProgress(initial += totalBytes / totalTicks);
-                    pbar.Tick($"transfering {tested.BitrateBps} B/s (expected {expectedTransferRateKbps} B/s, remaining time: {tested.RemainingTimeEstimate}");
-                    //pbar.Tick($"transfering {tested.TransferRateBps} B/s (expected {expectedTransferRateKbps} B/s, average {tested.AverageTransferRateBps}), remaining time: {tested.RemainingTimeEstimate}");
-                    Thread.Sleep(millisecondsInSecond);
+                    Thread.Sleep(1000);
                 }
+                else
+                {
+                    Thread.Sleep(3000);
+                }
+                progressReporter.ReportProgress();
+                progressBar.Refresh(i, progressReporter.RemainingTimeEstimate.ToString(@"hh\:mm\:ss"));
             }
         }
     }

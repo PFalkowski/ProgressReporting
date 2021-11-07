@@ -37,7 +37,9 @@ namespace ProgressReporting
 
         protected long CurrentCycleDuration => Watch.ElapsedMilliseconds - LastCycleTotalMillisecondsElapsed;
         protected TimeSpan AverageCycleDuration => TimeSpan.FromMilliseconds(CurrentCycle > 0 ? Elapsed.TotalMilliseconds / CurrentCycle : Watch.ElapsedMilliseconds);
-        public TimeSpan RemainingTimeEstimate => TimeSpan.FromMilliseconds((CurrentCycle > 0 ? AverageCycleDuration.TotalMilliseconds : Watch.ElapsedMilliseconds) * RemainingCyclesEstimate);
+        //public TimeSpan RemainingTimeEstimate => TimeSpan.FromMilliseconds((CurrentCycle > 0 ? AverageCycleDuration.TotalMilliseconds : Watch.ElapsedMilliseconds) * RemainingCyclesEstimate);
+        public TimeSpan RemainingTimeEstimate => CurrentRawValue == 0 ? TimeSpan.MaxValue :
+            TimeSpan.FromMilliseconds((double)Elapsed.TotalMilliseconds * (TargetRawValue - CurrentRawValue) / CurrentRawValue);
 
         private object _syncRoot = new object();
 

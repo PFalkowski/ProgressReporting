@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ShellProgressBar" Version="4.0.0" />
+    <PackageReference Include="Goblinfactory.Konsole" Version="6.2.1" />
   </ItemGroup>
 
   <ItemGroup>
