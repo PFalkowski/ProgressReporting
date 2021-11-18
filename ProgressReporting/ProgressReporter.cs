@@ -82,6 +82,16 @@ namespace ProgressReporting
             }
         }
 
+        public virtual void ReportProgress(double rawProgressValue, string customProgressMessage)
+        {
+            ReportProgress(rawProgressValue);
+        }
+
+        public virtual void ReportProgress(string customProgressMessage)
+        {
+            ReportProgress();
+        }
+
         protected virtual void Refresh()
         {
             if (PropertyChanged == null) return;
