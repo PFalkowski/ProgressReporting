@@ -15,6 +15,8 @@ namespace ProgressReporting
         void ReportProgress(double rawProgressValue);
         void ReportProgress();
         void Restart(double rawTargetValue);
+        void ReportProgress(double rawProgressValue, string customProgressMessage);
+        void ReportProgress(string customProgressMessage);
         void Pause();
         void UnPause();
         void Reset();

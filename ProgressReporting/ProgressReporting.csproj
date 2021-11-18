@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.0.1</Version>
+    <Version>2.2.0</Version>
     <Description>ProgressReporter estimating remaing time, remaining cycles (iterations), keeping track of average cycle duration. TransferProgress in addition keeps track of current and average bitrate,</Description>
     <PackageReleaseNotes>Fix bug with "string is not in correct format" when calling ConsoleProgressReporter for the first time</PackageReleaseNotes>
     <Copyright>Piotr Falkowski © 2021</Copyright>
