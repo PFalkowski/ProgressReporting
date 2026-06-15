@@ -1,0 +1,40 @@
+name: Publish to NuGet
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  id-token: write
+
+jobs:
+  publish:
+    name: Pack & push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore & build
+        run: |
+          dotnet restore
+          dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build
+
+      - name: Pack
+        run: dotnet pack ProgressReporting/ProgressReporting.csproj --configuration Release --no-build -p:PackageVersion=${{ github.ref_name }}
+
+      - name: Login to NuGet (Trusted Publishing)
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Push
+        run: dotnet nuget push ProgressReporting/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate
