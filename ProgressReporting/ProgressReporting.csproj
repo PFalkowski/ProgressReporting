@@ -2,17 +2,33 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.2.0</Version>
-    <Description>ProgressReporter estimating remaing time, remaining cycles (iterations), keeping track of average cycle duration. TransferProgress in addition keeps track of current and average bitrate,</Description>
-    <PackageReleaseNotes>Fix bug with "string is not in correct format" when calling ConsoleProgressReporter for the first time</PackageReleaseNotes>
-    <Copyright>Piotr Falkowski © 2021</Copyright>
-    <PackageLicenseUrl></PackageLicenseUrl>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS1591</NoWarn>
+
+    <Authors>Piotr Falkowski</Authors>
+    <Description>ProgressReporter estimating remaining time, remaining cycles, and average cycle duration. TransferProgress additionally tracks current and average bitrate. Lightweight, no external dependencies.</Description>
+    <Copyright>Piotr Falkowski © 2026</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/PFalkowski/ProgressReporting</PackageProjectUrl>
     <RepositoryUrl>https://github.com/PFalkowski/ProgressReporting</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>estimating remaing time, progress reporting, transfer progress, bitrate</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>progress;reporting;remaining-time;bitrate;transfer;ETA</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Version>2.3.0</Version>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
 
 </Project>
