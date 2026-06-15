@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
@@ -52,7 +52,7 @@ namespace ProgressReporting.Test
             Assert.Equal(0, tested.RemainingCyclesEstimate);
             Assert.Equal(100, tested.RemainingPercent);
             Assert.Equal(0, tested.RemainingRawValue);
-            Assert.Equal(default(TimeSpan), tested.RemainingTimeEstimate);
+            Assert.Equal(TimeSpan.MaxValue, tested.RemainingTimeEstimate); // MaxValue = no estimate available yet
             Assert.Equal(default(TimeSpan), tested.Elapsed);
             Assert.Equal(0, tested.TargetCycleEstimate);
             Assert.Equal(0, tested.TargetRawValue);
@@ -381,7 +381,7 @@ namespace ProgressReporting.Test
             Assert.Equal(0, tested.RemainingCyclesEstimate);
             Assert.Equal(100, tested.RemainingPercent);
             Assert.Equal(0, tested.RemainingRawValue);
-            Assert.Equal(default(TimeSpan), tested.RemainingTimeEstimate);
+            Assert.Equal(TimeSpan.MaxValue, tested.RemainingTimeEstimate); // MaxValue = no estimate available yet
             Assert.Equal(default(TimeSpan), tested.Elapsed);
             Assert.Equal(0, tested.TargetCycleEstimate);
             Assert.Equal(0, tested.TargetRawValue);
@@ -557,6 +557,25 @@ namespace ProgressReporting.Test
                 tested.ReportProgress(bytesTransferred);
                 Assert.True(tested.AverageBitrateBps > 0);
             }
+        }
+    }
+
+    public class TransferProgressDoubleRefreshRegressionTest
+    {
+        [Fact]
+        public void ReportProgressFiresPropertyChangedOnceNotTwice()
+        {
+            var tested = new TransferProgress();
+            tested.Start(1000);
+            var bitrateNotifications = 0;
+            tested.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(tested.AverageBitrateBps)) bitrateNotifications++;
+            };
+
+            tested.ReportProgress(100);
+
+            Assert.Equal(1, bitrateNotifications);
         }
     }
 }

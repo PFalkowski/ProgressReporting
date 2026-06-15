@@ -27,7 +27,7 @@ namespace ProgressReporting.Test
             Assert.Equal(0, tested.RemainingCyclesEstimate);
             Assert.Equal(100, tested.RemainingPercent);
             Assert.Equal(0, tested.RemainingRawValue);
-            Assert.Equal(default(TimeSpan), tested.RemainingTimeEstimate);
+            Assert.Equal(TimeSpan.MaxValue, tested.RemainingTimeEstimate); // MaxValue = no estimate available yet
             Assert.Equal(default(TimeSpan), tested.Elapsed);
             Assert.Equal(0, tested.TargetCycleEstimate);
             Assert.Equal(0, tested.TargetRawValue);
@@ -390,7 +390,7 @@ namespace ProgressReporting.Test
             Assert.Equal(0, tested.RemainingCyclesEstimate);
             Assert.Equal(100, tested.RemainingPercent);
             Assert.Equal(0, tested.RemainingRawValue);
-            Assert.Equal(default(TimeSpan), tested.RemainingTimeEstimate);
+            Assert.Equal(TimeSpan.MaxValue, tested.RemainingTimeEstimate); // MaxValue = no estimate available yet
             Assert.Equal(default(TimeSpan), tested.Elapsed);
             Assert.Equal(0, tested.TargetCycleEstimate);
             Assert.Equal(0, tested.TargetRawValue);
