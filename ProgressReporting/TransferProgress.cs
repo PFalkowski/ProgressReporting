@@ -1,4 +1,4 @@
-﻿namespace ProgressReporting
+namespace ProgressReporting
 {
     public class TransferProgress : ProgressReporter, ITransferProgress
     {
@@ -10,11 +10,14 @@
             NotifyPropertyChanged(nameof(AverageBitrateBps));
             NotifyPropertyChanged(nameof(BitrateBps));
         }
+
         public override void ReportProgress(double bytesAlreadyTransferred)
         {
             base.ReportProgress(bytesAlreadyTransferred);
-            Refresh();
+            // Refresh() is NOT called here — base.ReportProgress calls the overridden Refresh()
+            // via polymorphism, which already notifies AverageBitrateBps and BitrateBps.
         }
+
         public double AverageBitrateBps
         {
             get
@@ -25,6 +28,7 @@
                 return bytesDownloaded / secondsElapsed;
             }
         }
+
         public double BitrateBps
         {
             get
@@ -34,6 +38,7 @@
                 return currentSpeed;
             }
         }
+
         public override void Restart(double totalBytesToTransfer)
         {
             base.Restart(totalBytesToTransfer);
